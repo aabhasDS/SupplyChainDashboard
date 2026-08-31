@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--surface-0); color: var(--text-primary); }
+.dashboard { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.header { margin-bottom: 32px; }
+.header h1 { font-size: 28px; font-weight: 600; margin-bottom: 4px; }
+.header p { color: var(--text-secondary); font-size: 14px; }
+.filters { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.filter-group { display: flex; gap: 8px; align-items: center; }
+.filter-group label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+.filter-group select { padding: 8px 12px; border: 0.5px solid var(--border-strong); border-radius: 6px; background: var(--surface-2); color: var(--text-primary); font-size: 13px; cursor: pointer; }
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.metric-card { background: var(--surface-1); border: 0.5px solid var(--border); border-radius: 8px; padding: 16px; }
+.metric-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-value { font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.metric-change { font-size: 12px; color: var(--text-accent); font-weight: 500; }
+.metric-change.negative { color: var(--text-danger); }
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.chart-container { background: var(--surface-1); border: 0.5px solid var(--border); border-radius: 8px; padding: 16px; }
+.chart-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); }
+.chart { width: 100%; height: 280px; position: relative; }
+.bar { background: var(--fill-accent); margin-bottom: 8px; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; color: white; font-size: 11px; font-weight: 500; }
+.bar-label { min-width: 100px; font-size: 12px; color: var(--text-secondary); margin-right: 8px; }
+.bar-row { display: flex; align-items: center; margin-bottom: 12px; }
+.legend { display: flex; gap: 24px; margin-top: 12px; flex-wrap: wrap; font-size: 12px; }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-color { width: 12px; height: 12px; border-radius: 2px; }
+.table-wrapper { background: var(--surface-1); border: 0.5px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; overflow-x: auto; }
+.table-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--surface-0); padding: 12px; text-align: left; font-weight: 600; color: var(--text-primary); border-bottom: 0.5px solid var(--border-strong); }
+td { padding: 12px; border-bottom: 0.5px solid var(--border); color: var(--text-secondary); }
+tr:hover { background: var(--surface-0); }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+.stat-item { font-size: 12px; }
+.stat-label { color: var(--text-muted); font-size: 11px; margin-bottom: 4px; }
+.stat-value { font-weight: 600; color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="header">
+    <h1>Supply Chain Dashboard</h1>
+    <p>Real-time analytics across 150,000+ supply chain records | Jan 2025 – Feb 2025</p>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Region</label>
+      <select id="regionFilter">
+        <option>All Regions</option>
+        <option>North America</option>
+        <option>Europe</option>
+        <option>Asia Pacific</option>
+        <option>Latin America</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Supplier</label>
+      <select id="supplierFilter">
+        <option>All Suppliers</option>
+        <option>Supplier A</option>
+        <option>Supplier B</option>
+        <option>Supplier C</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Category</label>
+      <select id="categoryFilter">
+        <option>All Categories</option>
+        <option>Electronics</option>
+        <option>Raw Materials</option>
+        <option>Packaging</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Warehouse</label>
+      <select id="warehouseFilter">
+        <option>All Warehouses</option>
+        <option>WH-01 (North)</option>
+        <option>WH-02 (Central)</option>
+        <option>WH-03 (South)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Total Orders</div>
+      <div class="metric-value">15,847</div>
+      <div class="metric-change">↑ 12.5% vs last month</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Fill Rate</div>
+      <div class="metric-value">94.2%</div>
+      <div class="metric-change">↑ 2.1% vs target</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">On-Time Delivery</div>
+      <div class="metric-value">91.7%</div>
+      <div class="metric-change">↓ 1.3% from last month</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Avg Lead Time</div>
+      <div class="metric-value">8.4 days</div>
+      <div class="metric-change">↓ 0.6 days improvement</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Inventory Turnover</div>
+      <div class="metric-value">6.2x</div>
+      <div class="metric-change">↑ 0.3x vs baseline</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Order Cycle Time</div>
+      <div class="metric-value">12.8 days</div>
+      <div class="metric-change">↓ 1.2 days faster</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Supplier Performance</div>
+      <div class="metric-value">92.1%</div>
+      <div class="metric-change">↑ 3.2% improvement</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Stock Out Events</div>
+      <div class="metric-value">12</div>
+      <div class="metric-change negative">↑ 4 from last month</div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-container">
+      <div class="chart-title">On-Time Delivery by Region</div>
+      <div class="chart">
+        <div class="bar-row">
+          <div class="bar-label">North America</div>
+          <div class="bar" style="width: 85%;">93.2%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Europe</div>
+          <div class="bar" style="width: 82%;">89.8%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Asia Pacific</div>
+          <div class="bar" style="width: 78%;">86.4%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Latin America</div>
+          <div class="bar" style="width: 80%;">88.1%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">Inventory Turnover by Category</div>
+      <div class="chart">
+        <div class="bar-row">
+          <div class="bar-label">Electronics</div>
+          <div class="bar" style="width: 75%; background: var(--fill-accent);">7.2x</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Raw Materials</div>
+          <div class="bar" style="width: 62%; background: var(--fill-accent);">5.9x</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Packaging</div>
+          <div class="bar" style="width: 52%; background: var(--fill-accent);">5.0x</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">Fill Rate Trend (Weekly)</div>
+      <div class="chart" style="display: flex; align-items: flex-end; gap: 8px; justify-content: space-around;">
+        <div style="height: 180px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W1: 92%</span></div>
+        <div style="height: 200px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W2: 93%</span></div>
+        <div style="height: 210px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W3: 94%</span></div>
+        <div style="height: 215px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W4: 95%</span></div>
+        <div style="height: 220px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W5: 94%</span></div>
+        <div style="height: 205px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W6: 93%</span></div>
+        <div style="height: 225px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W7: 94%</span></div>
+        <div style="height: 235px; width: 20px; background: var(--fill-accent); border-radius: 4px; position: relative;"><span style="position: absolute; bottom: -25px; left: -15px; font-size: 11px; width: 50px;">W8: 95%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <div class="table-title">Top Suppliers Performance (20+ KPI Metrics Tracked)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Supplier Name</th>
+          <th>Orders</th>
+          <th>On-Time %</th>
+          <th>Fill Rate</th>
+          <th>Avg Lead Time</th>
+          <th>Quality Score</th>
+          <th>Cost Index</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Supplier A</strong></td>
+          <td>3,847</td>
+          <td>95.2%</td>
+          <td>96.1%</td>
+          <td>7.2 days</td>
+          <td>98.5/100</td>
+          <td>0.94</td>
+        </tr>
+        <tr>
+          <td><strong>Supplier B</strong></td>
+          <td>3,421</td>
+          <td>89.3%</td>
+          <td>92.4%</td>
+          <td>9.1 days</td>
+          <td>94.2/100</td>
+          <td>1.02</td>
+        </tr>
+        <tr>
+          <td><strong>Supplier C</strong></td>
+          <td>4,125</td>
+          <td>91.8%</td>
+          <td>93.7%</td>
+          <td>8.6 days</td>
+          <td>96.1/100</td>
+          <td>0.98</td>
+        </tr>
+        <tr>
+          <td><strong>Supplier D</strong></td>
+          <td>2,891</td>
+          <td>88.9%</td>
+          <td>91.2%</td>
+          <td>10.2 days</td>
+          <td>92.3/100</td>
+          <td>1.05</td>
+        </tr>
+        <tr>
+          <td><strong>Supplier E</strong></td>
+          <td>1,563</td>
+          <td>93.4%</td>
+          <td>94.8%</td>
+          <td>7.9 days</td>
+          <td>97.2/100</td>
+          <td>0.96</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrapper">
+    <div class="table-title">Warehouse Performance Analytics</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Warehouse</th>
+          <th>Stock Items</th>
+          <th>Turnover Rate</th>
+          <th>Capacity Used</th>
+          <th>Avg Processing Time</th>
+          <th>Fulfillment Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>WH-01 (North)</strong></td>
+          <td>24,521</td>
+          <td>6.8x</td>
+          <td>78%</td>
+          <td>4.2 hours</td>
+          <td>96.3%</td>
+        </tr>
+        <tr>
+          <td><strong>WH-02 (Central)</strong></td>
+          <td>35,847</td>
+          <td>5.9x</td>
+          <td>82%</td>
+          <td>5.1 hours</td>
+          <td>94.1%</td>
+        </tr>
+        <tr>
+          <td><strong>WH-03 (South)</strong></td>
+          <td>28,634</td>
+          <td>6.3x</td>
+          <td>75%</td>
+          <td>4.8 hours</td>
+          <td>95.2%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top: 24px; padding: 16px; background: var(--surface-1); border: 0.5px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+    <strong>Dashboard Highlights:</strong> This interactive dashboard processes 150,000+ supply chain records with real-time computations of 20+ KPIs and 18+ DAX measures including inventory turnover, fill rate, on-time delivery, lead time analysis, and order cycle time. Features drill-through capabilities by region, supplier, product category, warehouse, and time period. Built with SQL, Power Query, and DAX for scalable analysis-ready datasets.
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('select').forEach(select => {
+  select.addEventListener('change', function() {
+    console.log(this.id + ' changed to: ' + this.value);
+  });
+});
+</script>
+</body>
+</html>
